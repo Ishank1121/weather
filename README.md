@@ -1,264 +1,512 @@
-Creating a responsive dynamic website called "Recipe Finder" requires a combination of front-end and back-end technologies. Below is a breakdown of how to implement it using HTML, CSS, JavaScript, AJAX, JSON, jQuery, and Node.js.
+html....
 
-Tech Stack:
-
-Front-end: HTML, CSS, JavaScript, jQuery, AJAX
-Back-end: Node.js (Express.js)
-Database: JSON file (or MongoDB for scalability)
-API: Custom API serving dish names, recipes, images, and videos
-Features:
-
-✔ Search recipes dynamically using AJAX
-✔ Fetch recipe details including ingredients, images, and videos
-✔ Responsive UI with Navbar, Sidebar, and Footer
-✔ Use of jQuery for smooth interactions
-✔ Node.js + Express.js for API handling
-
-Folder Structure:
-
-recipe-finder/
-│── public/
-│   ├── css/style.css
-│   ├── js/script.js
-│   ├── images/
-│── views/
-│   ├── index.html
-│── server/
-│   ├── data/recipes.json
-│   ├── server.js
-│── package.json
-│── README.md
-Step 1: Setup Project
-
-Initialize a Node.js project:
-
-mkdir recipe-finder
-cd recipe-finder
-npm init -y
-npm install express cors body-parser
-Step 2: Create API in Node.js
-
-Create a folder server and inside it, create a file server.js.
-
-const express = require("express");
-const cors = require("cors");
-const app = express();
-const PORT = 3000;
-
-app.use(cors());
-app.use(express.json());
-
-// Sample Recipe Data (You can replace this with a database)
-const recipes = [
-  {
-    id: 1,
-    name: "Pasta Alfredo",
-    image: "https://via.placeholder.com/200",
-    video: "https://www.youtube.com/embed/VIDEO_ID",
-    ingredients: ["Pasta", "Cream", "Garlic", "Cheese", "Butter"],
-    instructions: "Boil pasta, cook with sauce, mix well, and serve hot.",
-  },
-  {
-    id: 2,
-    name: "Chicken Biryani",
-    image: "https://via.placeholder.com/200",
-    video: "https://www.youtube.com/embed/VIDEO_ID",
-    ingredients: ["Rice", "Chicken", "Spices", "Onions", "Yogurt"],
-    instructions: "Cook rice, add chicken and spices, mix well, and serve.",
-  },
-];
-
-// API Endpoint
-app.get("/api/recipes", (req, res) => {
-  res.json(recipes);
-});
-
-// Search API
-app.get("/api/recipes/search", (req, res) => {
-  const query = req.query.name.toLowerCase();
-  const result = recipes.filter((recipe) =>
-    recipe.name.toLowerCase().includes(query)
-  );
-  res.json(result);
-});
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-Step 3: Create Frontend UI
-
-Inside views/index.html:
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Finder</title>
-    <link rel="stylesheet" href="/public/css/style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-    <nav class="navbar">
-        <h1>Recipe Finder</h1>
-    </nav>
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Meal For Your Ingredients</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="container">
-        <aside class="sidebar">
-            <h2>Categories</h2>
-            <ul>
-                <li>Vegetarian</li>
-                <li>Non-Vegetarian</li>
-                <li>Desserts</li>
-                <li>Snacks</li>
-            </ul>
-        </aside>
+      <div class="meal-wrapper">
+        <div class="meal-search">
+          <h2 class="title">Find Meals For Your Ingredients</h2>
+          <blockquote>
+            Real food doesn't have ingredients, real food is ingredients.<br />
+            <cite>- Rudra Mahajan</cite>
+          </blockquote>
 
-        <main>
-            <input type="text" id="search" placeholder="Search for a recipe...">
-            <div id="recipes"></div>
-        </main>
+          <div class="meal-search-box">
+            <input
+              type="text"
+              class="search-control"
+              placeholder="Enter an ingredient"
+              id="search-input"
+            />
+            <button
+              type="submit"
+              class="search-btn btn"
+              id="search-btn"
+              title="butt"
+            >
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="meal-result">
+          <h2 class="title">Your Search Results:</h2>
+          
+          <div id="meal">
+            <!-- meal item -->
+            <!-- <div class = "meal-item">
+            <div class = "meal-img">
+              <img src = "food.jpg" alt = "food">
+            </div>
+            <div class = "meal-name">
+              <h3>Potato Chips</h3>
+              <a href = "#" class = "recipe-btn">Get Recipe</a>
+            </div>
+          </div> -->
+            <!-- end of meal item -->
+          </div>
+        </div>
+
+        <div class="meal-details">
+          <!-- recipe close btn -->
+          <button
+            type="button"
+            class="btn recipe-close-btn"
+            id="recipe-close-btn"
+            title="hehehe"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+
+          <!-- meal content -->
+          <div class="meal-details-content">
+            <!-- <h2 class = "recipe-title">Meals Name Here</h2>
+          <p class = "recipe-category">Category Name</p>
+          <div class = "recipe-instruct">
+            <h3>Instructions:</h3>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quo blanditiis quis accusantium natus! Porro, reiciendis maiores molestiae distinctio veniam ratione ex provident ipsa, soluta suscipit quam eos velit autem iste!</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet aliquam voluptatibus ad obcaecati magnam, esse numquam nisi ut adipisci in?</p>
+          </div>
+          <div class = "recipe-meal-img">
+            <img src = "food.jpg" alt = "">
+          </div>
+          <div class = "recipe-link">
+            <a href = "#" target = "_blank">Watch Video</a>
+          </div> -->
+          </div>
+        </div>
+      </div>
     </div>
 
-    <footer class="footer">
-        <p>&copy; 2025 Recipe Finder</p>
-    </footer>
-
-    <script src="/public/js/script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
-Step 4: Add CSS Styles
 
-Inside public/css/style.css:
 
-body {
-    font-family: Arial, sans-serif;
+css...
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800;900&display=swap');
+
+*{
+    padding: 0;
     margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
+    box-sizing: border-box;
+}
+:root{
+    --tenne-tawny: rgba(207, 58, 207, 0.993);
+    --tenne-tawny-dark: rgba(207, 58, 207, 0.993);
+}
+body{
+    font-weight: 300;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    font-family: 'Poppins', sans-serif;
 }
 
-.navbar {
-    background-color: #333;
-    color: white;
-    padding: 15px;
+/*  */
+.btn{
+    font-family: inherit;
+    cursor: pointer;
+    outline: 0;
+    font-size: 1.05rem;
+}
+.text{
+    opacity: 0.8;
+}
+.title{
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/*  */
+.container{
+    min-height: 100vh;
+}
+.meal-wrapper{
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #fff;
     text-align: center;
 }
-
-.container {
+.meal-search{
+    margin: 2rem 0;
+}
+.meal-search cite{
+    font-size: 1rem;
+}
+.meal-search-box{
+    margin: 1.2rem 0;
     display: flex;
-    padding: 20px;
+    align-items: stretch;
 }
-
-.sidebar {
-    width: 20%;
-    background: #ddd;
-    padding: 15px;
-}
-
-.sidebar ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-main {
-    width: 80%;
-    padding: 20px;
-}
-
-input {
+.search-control,
+.search-btn{
     width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
 }
-
-#recipes {
-    display: flex;
-    flex-wrap: wrap;
+.search-control{
+    padding: 0 1rem;
+    font-size: 1.1rem;
+    font-family: inherit;
+    outline: 0;
+    border: 1px solid var(--tenne-tawny);
+    color: var(--tenne-tawny);
+    border-top-left-radius: 2rem;
+    border-bottom-left-radius: 2rem;
 }
-
-.recipe-card {
-    background: white;
-    padding: 15px;
-    margin: 10px;
-    border-radius: 8px;
-    width: 200px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+.search-control::placeholder{
+    color: var(--tenne-tawny);
 }
-
-.recipe-card img {
+.search-btn{
+    width: 55px;
+    height: 55px;
+    font-size: 1.8rem;
+    background: var(--tenne-tawny);
+    color: #fff;
+    border: none;
+    border-top-right-radius: 2rem;
+    border-bottom-right-radius: 2rem;
+    transition: all 0.4s linear;
+    -webkit-transition: all 0.4s linear;
+    -moz-transition: all 0.4s linear;
+    -ms-transition: all 0.4s linear;
+    -o-transition: all 0.4s linear;
+}
+.search-btn:hover{
+    background: var(--tenne-tawny-dark);
+}
+.meal-result{
+    margin-top: 4rem;
+}
+#meal{
+    margin: 2.4rem 0;
+}
+.meal-item{
+    border-radius: 1rem;
+    -webkit-border-radius: 1rem;
+    -moz-border-radius: 1rem;
+    -ms-border-radius: 1rem;
+    -o-border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 21px -12px rgba(0, 0, 0, 0.79);
+    margin: 2rem 0;
+}
+.meal-img img{
     width: 100%;
-    height: auto;
+    display: block;
+}
+.meal-name{
+    padding: 1.5rem 0.5rem;
+}
+.meal-name h3{
+    font-size: 1.4rem;
+}
+.recipe-btn{
+    text-decoration: none;
+    color: #fff;
+    background: var(--tenne-tawny);
+    font-weight: 500;
+    font-size: 1.1rem;
+    padding: 0.75rem 0;
+    display: block;
+    width: 175px;
+    margin: 1rem auto;
+    border-radius: 2rem;
+    -webkit-border-radius: 2rem;
+    -moz-border-radius: 2rem;
+    -ms-border-radius: 2rem;
+    -o-border-radius: 2rem;
+    transition: all 0.4s linear;
+    -webkit-transition: all 0.4s linear;
+    -moz-transition: all 0.4s linear;
+    -ms-transition: all 0.4s linear;
+    -o-transition: all 0.4s linear;
+}
+.recipe-btn:hover{
+    background: var(--tenne-tawny-dark);
 }
 
-.footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px;
+.meal-details{
     position: fixed;
-    bottom: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    color: #fff;
+    background: var(--tenne-tawny);
+    border-radius: 1rem;
+    -webkit-border-radius: 1rem;
+    -moz-border-radius: 1rem;
+    -ms-border-radius: 1rem;
+    -o-border-radius: 1rem;
+    width: 90%;
+    height: 90%;
+    overflow-y: scroll;
+    display: none;
+    padding: 2rem 0;
+}
+.meal-details::-webkit-scrollbar{
+    width: 10px;
+}
+.meal-details::-webkit-scrollbar-thumb{
+    background: #f0f0f0;
+    border-radius: 2rem;
+    -webkit-border-radius: 2rem;
+    -moz-border-radius: 2rem;
+    -ms-border-radius: 2rem;
+    -o-border-radius: 2rem;
+}
+
+
+/* js related */
+.showRecipe{
+    display: block;
+}
+
+.meal-details-content{
+    margin: 2rem;
+}
+.meal-details-content p:not(.recipe-category){
+    padding: 1rem 0;
+}
+.recipe-close-btn{
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+    font-size: 1.8rem;
+    background: #fff;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+}
+.recipe-title{
+    letter-spacing: 1px;
+    padding-bottom: 1rem;
+}
+.recipe-category{
+    background: #fff;
+    font-weight: 600;
+    color: var(--tenne-tawny);
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.3rem;
+    -webkit-border-radius: 0.3rem;
+    -moz-border-radius: 0.3rem;
+    -ms-border-radius: 0.3rem;
+    -o-border-radius: 0.3rem;
+}
+.recipe-category{
+    background: #fff;
+    font-weight: 600;
+    color: var(--tenne-tawny);
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.3rem;
+    -webkit-border-radius: 0.3rem;
+    -moz-border-radius: 0.3rem;
+    -ms-border-radius: 0.3rem;
+    -o-border-radius: 0.3rem;
+}
+.recipe-instruct{
+    padding: 1rem 0;
+}
+.recipe-meal-img img{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    margin: 0 auto;
+    display: block;
+}
+.recipe-link{
+    margin: 1.4rem 0;
+}
+.recipe-link a{
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    transition: all 0.4s linear;
+    -webkit-transition: all 0.4s linear;
+    -moz-transition: all 0.4s linear;
+    -ms-transition: all 0.4s linear;
+    -o-transition: all 0.4s linear;
+}
+.recipe-link a:hover{
+    opacity: 0.8;
+}
+
+
+/*  */
+.notFound{
+    grid-template-columns: 1fr!important;
+    color: var(--tenne-tawny);
+    font-size: 1.8rem;
+    font-weight: 600;
     width: 100%;
 }
-Step 5: Fetch API Data Using AJAX & jQuery
 
-Inside public/js/script.js:
 
-$(document).ready(function () {
-    $("#search").on("input", function () {
-        let query = $(this).val();
 
-        if (query.length > 1) {
-            $.ajax({
-                url: `/api/recipes/search?name=${query}`,
-                method: "GET",
-                success: function (data) {
-                    displayRecipes(data);
-                },
-                error: function () {
-                    $("#recipes").html("<p>No recipes found</p>");
-                },
-            });
-        } else {
-            $("#recipes").html("");
-        }
+
+
+
+/* Media Queries */
+@media screen and (min-width: 600px){
+    .meal-search-box{
+        width: 540px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media screen and (min-width: 768px){
+    #meal{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+    .meal-item{
+        margin: 0;
+    }
+    .meal-details{
+        width: 700px;
+    }
+}
+
+@media screen and (min-width: 992px){
+    #meal{
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+js...
+
+const searchBtn = document.getElementById('search-btn');
+const mealList = document.getElementById('meal');
+const mealDetailsContent = document.querySelector('.meal-details-content');
+const recipeCloseBtn = document.getElementById('recipe-close-btn');
+
+searchBtn.addEventListener('click', getMealList);
+mealList.addEventListener('click', getMealRecipe);
+recipeCloseBtn.addEventListener('click', () => {
+    mealDetailsContent.parentElement.classList.remove('showRecipe');
+});
+
+function getMealList(){
+    let searchInputTxt = document.getElementById('search-input').value.trim();
+    let ingredients = searchInputTxt.split(' ');
+
+    let fetchPromises = ingredients.map(ingredient => {
+        return fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`)
+            .then(response => response.json());
     });
 
-    function displayRecipes(recipes) {
-        $("#recipes").html("");
-        recipes.forEach((recipe) => {
-            $("#recipes").append(`
-                <div class="recipe-card">
-                    <h3>${recipe.name}</h3>
-                    <img src="${recipe.image}" alt="${recipe.name}">
-                    <p><strong>Ingredients:</strong> ${recipe.ingredients.join(", ")}</p>
-                    <p><strong>Instructions:</strong> ${recipe.instructions}</p>
-                    <iframe width="200" height="150" src="${recipe.video}" frameborder="0" allowfullscreen></iframe>
-                </div>
-            `);
+    Promise.all(fetchPromises)
+        .then(results => {
+            let html = "";
+            if (results.every(result => result.meals)) {
+                let mealArrays = results.map(result => result.meals);
+                let commonMeals = mealArrays.shift().filter(meal => {
+                    return mealArrays.every(mealArray => mealArray.some(m => m.idMeal === meal.idMeal));
+                });
+
+                if (commonMeals.length) {
+                    commonMeals.forEach(meal => {
+                        html += `
+                            <div class = "meal-item" data-id = "${meal.idMeal}">
+                                <div class = "meal-img">
+                                    <img src = "${meal.strMealThumb}" alt = "food">
+                                </div>
+                                <div class = "meal-name">
+                                    <h3>${meal.strMeal}</h3>
+                                    <a href = "#" class = "recipe-btn">Get Recipe</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    mealList.classList.remove('notFound');
+                } else {
+                    html = "Sorry, we didn't find any meal!";
+                    mealList.classList.add('notFound');
+                }
+            } else {
+                html = "Sorry, we didn't find any meal!";
+                mealList.classList.add('notFound');
+            }
+
+            mealList.innerHTML = html;
         });
+}
+
+function getMealRecipe(e){
+    e.preventDefault();
+    if(e.target.classList.contains('recipe-btn')){
+        let mealItem = e.target.parentElement.parentElement;
+        fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealItem.dataset.id}`)
+        .then(response => response.json())
+        .then(data => mealRecipeModal(data.meals));
     }
-});
-Step 6: Run the Application
+}
 
-Start the server:
-node server/server.js
-Open index.html in the browser.
-Final Features:
+function mealRecipeModal(meal){
+    console.log(meal);
+    meal = meal[0];
 
-✅ Live search for recipes using AJAX
-✅ Displays recipe details with images and videos
-✅ Sidebar for categories
-✅ Responsive layout with navbar, sidebar, and footer
-✅ Smooth interactions with jQuery
+    let ingredients = "";
+    for (let i = 1; i <= 20; i++) {
+        if (meal[`strIngredient${i}`]) {
+            ingredients += `<li>${meal[`strIngredient${i}`]} - ${meal[`strMeasure${i}`]}</li>`;
+        }
+    }
 
-Would you like me to add database support (MongoDB) or deploy it on a cloud platform?
-
-
-
-
-
-
-
-
-
-Create a responsive dynamic website on topic “recipie finder” with in an api which contain data of dishes and their recepies with their ingredients and functionality like on searching dish name it will suggest you the recipy and the images and the video for the following list add a navbar sidenabar and footer use html css js ajax json jquery nodejs
+    let html = `
+        <h2 class = "recipe-title">${meal.strMeal}</h2>
+        <p class = "recipe-category">${meal.strCategory}</p>
+        <div class = "recipe-instruct">
+            <h3>Instructions:</h3>
+            <p>${meal.strInstructions}</p>
+        </div>
+        <div class = "recipe-ingredients">
+            <h3>Ingredients:</h3>
+            <ul>${ingredients}</ul>
+        </div>
+        <div class = "recipe-meal-img">
+            <img src = "${meal.strMealThumb}" alt = "">
+        </div>
+        <div class = "recipe-link">
+            <a href = "${meal.strYoutube}" target = "_blank">Watch Video</a>
+        </div>
+    `;
+    mealDetailsContent.innerHTML = html;
+    mealDetailsContent.parentElement.classList.add('showRecipe');
+}
