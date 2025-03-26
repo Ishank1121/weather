@@ -252,3 +252,13 @@ Final Features:
 ✅ Smooth interactions with jQuery
 
 Would you like me to add database support (MongoDB) or deploy it on a cloud platform?
+
+
+
+
+
+
+
+
+
+Create a responsive dynamic website on topic “recipie finder” with in an api which contain data of dishes and their recepies with their ingredients and functionality like on searching dish name it will suggest you the recipy and the images and the video for the following list add a navbar sidenabar and footer use html css js ajax json jquery nodejs
